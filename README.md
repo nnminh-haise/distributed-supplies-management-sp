@@ -6,3 +6,4 @@
 
 - Project description: [product management tool](docs/De2-QLVT-SQLSERVER_PhanTan.doc)
 - Project database: [SQL](sql/QLVT_DH.sql)
+- Stored procedures: [SP](stored-procedures/README.md)
