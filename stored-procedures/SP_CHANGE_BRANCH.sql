@@ -48,7 +48,7 @@ BEGIN
 			    INSERT INTO LINK1.QLVT_DATHANG.dbo.NhanVien
                     (MANV, HO, TEN, DIACHI, NGAYSINH, LUONG, MACN, TRANGTHAIXOA)
 			    VALUES (
-                    (SELECT MAX(MANV) FROM LINK0.QLVT.dbo.NhanVien) + 1, @HONV, @TENNV, @DIACHINV, @NGAYSINHNV, @LUONGNV, @MACN, 0)
+                    (SELECT MAX(MANV) FROM LINK0.QLVT_DATHANG.dbo.NhanVien) + 1, @HONV, @TENNV, @DIACHINV, @NGAYSINHNV, @LUONGNV, @MACN, 0)
 		    END
 		
         -- Cập nhật lại trạng thái xoá của record nhân viên ở site cũ (site hiện tại)
