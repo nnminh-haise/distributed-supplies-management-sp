@@ -7,9 +7,9 @@ BEGIN
         BEGIN
             DECLARE @REQUESTING_AT_CURRENT_BRANCH INT
             IF (EXISTS(SELECT 1 FROM NHANVIEN AS NV WHERE NV.MACN = @CHINHANH))
-                @REQUESTING_AT_CURRENT_BRANCH = 1
+                SET @REQUESTING_AT_CURRENT_BRANCH = 1
             ELSE
-                @REQUESTING_AT_CURRENT_BRANCH = 0
+                SET @REQUESTING_AT_CURRENT_BRANCH = 0
 
             IF @REQUESTING_AT_CURRENT_BRANCH = 1
                 BEGIN
@@ -17,7 +17,7 @@ BEGIN
                         NV.MANV AS MANV,
                         NV.CMND AS CMND,
                         HO + ' ' + TEN AS HO_TEN,
-                        MV.DAICHI AS DIACHI
+                        MV.DIACHI AS DIACHI
                     FROM NHANVIEN AS NV
                     ORDER BY HO + ' ' + TEN AS HO_TEN
                 END
@@ -27,18 +27,18 @@ BEGIN
                         NV.MANV AS MANV,
                         NV.CMND AS CMND,
                         HO + ' ' + TEN AS HO_TEN,
-                        MV.DAICHI AS DIACHI
+                        MV.DIACHI AS DIACHI
                     FROM LINK1.QLVT_DATHANG.DBO.NHANVIEN AS NV
                     ORDER BY HO + ' ' + TEN AS HO_TEN
                 END
         END
-    ELSE IF @ROLE = 'CHINHANH'
+    ELSE IF @ROLE = 'ChiNhanh'
         BEGIN
             SELECT
                 NV.MANV AS MANV,
                 NV.CMND AS CMND,
                 HO + ' ' + TEN AS HO_TEN,
-                MV.DAICHI AS DIACHI
+                MV.DIACHI AS DIACHI
             FROM NHANVIEN AS NV
             ORDER BY HO + ' ' + TEN AS HO_TEN
         END

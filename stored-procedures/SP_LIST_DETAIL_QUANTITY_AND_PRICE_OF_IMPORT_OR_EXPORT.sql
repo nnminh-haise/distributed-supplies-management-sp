@@ -1,6 +1,6 @@
 CREATE PROCEDURE SP_LIST_DETAIL_QUANTITY_AND_PRICE_OF_IMPORT_OR_EXPORT
     @ROLE NVARCHAR(8),
-    @OPTION NCHAR(6),
+    @OPTION NCHAR(4),
     @FROM_DATE DATE,
     @TO_DATE DATE
 AS
@@ -12,7 +12,7 @@ BEGIN
             IF @OPTION = 'NHAP'
                 BEGIN
                     SELECT
-                        FORMAT(TKVT.NGAY, 'MM-YYYY') AS NGAY_THANG,
+                        FORMAT(TKVT.NGAY, 'MM-YYYY') AS THANG_NAM,
                         VT.TENVT AS TEN_VAT_TU,
                         TKVT.TONG_SO_LUONG AS TONG_SO_LUONG,
                         TKVT.TONG_TRI_GIA AS TONG_TRI_GIA
@@ -27,15 +27,17 @@ BEGIN
                             FROM LINK2.QLVT_DATHANG.DBO.PHIEUNHAP AS PN
                             INNER JOIN LINK2.QLVT_DATHANG.DBO.CTPN AS CTPN
                                 ON PN.MAPN = CTPN.MAPN
-                            WHERE PN.NGAY BETWEEN @FROM_DATE AND @TO_DATE) AS TKVT,
+                            WHERE PN.NGAY BETWEEN @FROM_DATE AND @TO_DATE
+                        ) AS TKVT
                         ON VT.MAVT = TKVT.MAVT
-                        GROUP BY TKVT.NGAY
+                        GROUP BY FORMAT(TKVT.NGAY, 'MM-YYYY'), VT.TENVT
+                        ORDER BY FORMAT(TKVT.NGAY, 'MM-YYYY') DESC, VT.TENVT ASC
                 END
             -- FOR XUAT OPTION
             ELSE IF @OPTION = 'XUAT'
                 BEGIN
                     SELECT
-                        FORMAT(TKVT.NGAY, 'MM-YYYY') AS NGAY_THANG,
+                        FORMAT(TKVT.NGAY, 'MM-YYYY') AS THANG_NAM,
                         VT.TENVT AS TEN_VAT_TU,
                         TKVT.TONG_SO_LUONG AS TONG_SO_LUONG,
                         TKVT.TONG_TRI_GIA AS TONG_TRI_GIA
@@ -50,9 +52,11 @@ BEGIN
                             FROM LINK2.QLVT_DATHANG.DBO.PHIEUXUAT AS PX
                             INNER JOIN LINK2.QLVT_DATHANG.DBO.CTPX AS CTPX
                                 ON PX.MAPX = CTPX.MAPX
-                            WHERE PX.NGAY BETWEEN @FROM_DATE AND @TO_DATE) AS TKVT,
+                            WHERE PX.NGAY BETWEEN @FROM_DATE AND @TO_DATE
+                        ) AS TKVT
                         ON VT.MAVT = TKVT.MAVT
-                        GROUP BY TKVT.NGAY
+                        GROUP BY FORMAT(TKVT.NGAY, 'MM-YYYY'), VT.TENVT
+                        ORDER BY FORMAT(TKVT.NGAY, 'MM-YYYY') DESC, VT.TENVT ASC
                 END
         END
     -- FOR OTHER ROLES: CHINHANH, USER
@@ -62,7 +66,7 @@ BEGIN
             IF @OPTION = 'NHAP'
                 BEGIN
                     SELECT
-                        FORMAT(TKVT.NGAY, 'MM-YYYY') AS NGAY_THANG,
+                        FORMAT(TKVT.NGAY, 'MM-YYYY') AS THANG_NAM,
                         VT.TENVT AS TEN_VAT_TU,
                         TKVT.TONG_SO_LUONG AS TONG_SO_LUONG,
                         TKVT.TONG_TRI_GIA AS TONG_TRI_GIA
@@ -77,15 +81,17 @@ BEGIN
                             FROM PHIEUNHAP AS PN
                             INNER JOIN CTPN AS CTPN
                                 ON PN.MAPN = CTPN.MAPN
-                            WHERE PN.NGAY BETWEEN @FROM_DATE AND @TO_DATE) AS TKVT,
+                            WHERE PN.NGAY BETWEEN @FROM_DATE AND @TO_DATE
+                        ) AS TKVT
                         ON VT.MAVT = TKVT.MAVT
-                        GROUP BY TKVT.NGAY
+                        GROUP BY FORMAT(TKVT.NGAY, 'MM-YYYY'), VT.TENVT
+                        ORDER BY FORMAT(TKVT.NGAY, 'MM-YYYY') DESC, VT.TENVT ASC
                 END
             -- FOR XUAT OPTION
             ELSE IF @OPTION = 'XUAT'
                 BEGIN
                     SELECT
-                        FORMAT(TKVT.NGAY, 'MM-YYYY') AS NGAY_THANG,
+                        FORMAT(TKVT.NGAY, 'MM-YYYY') AS THANG_NAM,
                         VT.TENVT AS TEN_VAT_TU,
                         TKVT.TONG_SO_LUONG AS TONG_SO_LUONG,
                         TKVT.TONG_TRI_GIA AS TONG_TRI_GIA
@@ -100,9 +106,11 @@ BEGIN
                             FROM PHIEUXUAT AS PX
                             INNER JOIN CTPX AS CTPX
                                 ON PX.MAPX = CTPX.MAPX
-                            WHERE PX.NGAY BETWEEN @FROM_DATE AND @TO_DATE) AS TKVT,
+                            WHERE PX.NGAY BETWEEN @FROM_DATE AND @TO_DATE
+                        ) AS TKVT
                         ON VT.MAVT = TKVT.MAVT
-                        GROUP BY TKVT.NGAY
+                        GROUP BY FORMAT(TKVT.NGAY, 'MM-YYYY'), VT.TENVT
+                        ORDER BY FORMAT(TKVT.NGAY, 'MM-YYYY') DESC, VT.TENVT ASC
                 END
         END
 END
