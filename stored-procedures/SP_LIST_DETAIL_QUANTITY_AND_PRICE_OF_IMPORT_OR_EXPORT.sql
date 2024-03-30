@@ -17,7 +17,7 @@ BEGIN
                         TKVT.TONG_SO_LUONG AS TONG_SO_LUONG,
                         TKVT.TONG_TRI_GIA AS TONG_TRI_GIA
                     FROM
-                        LINK2.QLVT_DATHANG.DBO.VATTU AS VT,
+                        LINK2.QLVT_DATHANG.DBO.VATTU AS VT
                         INNER JOIN (
                             SELECT
                                 PN.NGAY AS NGAY,
@@ -28,6 +28,7 @@ BEGIN
                             INNER JOIN LINK2.QLVT_DATHANG.DBO.CTPN AS CTPN
                                 ON PN.MAPN = CTPN.MAPN
                             WHERE PN.NGAY BETWEEN @FROM_DATE AND @TO_DATE
+                            GROUP BY PN.NGAY, CTPN.MAVT
                         ) AS TKVT
                         ON VT.MAVT = TKVT.MAVT
                         GROUP BY FORMAT(TKVT.NGAY, 'MM-YYYY'), VT.TENVT
@@ -42,7 +43,7 @@ BEGIN
                         TKVT.TONG_SO_LUONG AS TONG_SO_LUONG,
                         TKVT.TONG_TRI_GIA AS TONG_TRI_GIA
                     FROM
-                        LINK2.QLVT_DATHANG.DBO.VATTU AS VT,
+                        LINK2.QLVT_DATHANG.DBO.VATTU AS VT
                         INNER JOIN (
                             SELECT
                                 PX.NGAY AS NGAY,
@@ -53,6 +54,7 @@ BEGIN
                             INNER JOIN LINK2.QLVT_DATHANG.DBO.CTPX AS CTPX
                                 ON PX.MAPX = CTPX.MAPX
                             WHERE PX.NGAY BETWEEN @FROM_DATE AND @TO_DATE
+                            GROUP BY PN.NGAY, CTPN.MAVT
                         ) AS TKVT
                         ON VT.MAVT = TKVT.MAVT
                         GROUP BY FORMAT(TKVT.NGAY, 'MM-YYYY'), VT.TENVT
@@ -71,7 +73,7 @@ BEGIN
                         TKVT.TONG_SO_LUONG AS TONG_SO_LUONG,
                         TKVT.TONG_TRI_GIA AS TONG_TRI_GIA
                     FROM
-                        VATTU AS VT,
+                        VATTU AS VT
                         INNER JOIN (
                             SELECT
                                 PN.NGAY AS NGAY,
@@ -82,6 +84,7 @@ BEGIN
                             INNER JOIN CTPN AS CTPN
                                 ON PN.MAPN = CTPN.MAPN
                             WHERE PN.NGAY BETWEEN @FROM_DATE AND @TO_DATE
+                            GROUP BY PN.NGAY, CTPN.MAVT
                         ) AS TKVT
                         ON VT.MAVT = TKVT.MAVT
                         GROUP BY FORMAT(TKVT.NGAY, 'MM-YYYY'), VT.TENVT
@@ -96,7 +99,7 @@ BEGIN
                         TKVT.TONG_SO_LUONG AS TONG_SO_LUONG,
                         TKVT.TONG_TRI_GIA AS TONG_TRI_GIA
                     FROM
-                        VATTU AS VT,
+                        VATTU AS VT
                         INNER JOIN (
                             SELECT
                                 PX.NGAY AS NGAY,
@@ -107,6 +110,7 @@ BEGIN
                             INNER JOIN CTPX AS CTPX
                                 ON PX.MAPX = CTPX.MAPX
                             WHERE PX.NGAY BETWEEN @FROM_DATE AND @TO_DATE
+                            GROUP BY PN.NGAY, CTPN.MAVT
                         ) AS TKVT
                         ON VT.MAVT = TKVT.MAVT
                         GROUP BY FORMAT(TKVT.NGAY, 'MM-YYYY'), VT.TENVT
