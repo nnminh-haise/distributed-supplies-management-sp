@@ -19,6 +19,7 @@ BEGIN
                     FROM
                         LINK2.QLVT_DATHANG.DBO.VATTU AS VT
                         INNER JOIN (
+                            # thay đổi chỗ này thành group by trong tháng
                             SELECT
                                 PN.NGAY AS NGAY,
                                 CTPN.MAVT AS MAVT,
@@ -27,11 +28,11 @@ BEGIN
                             FROM LINK2.QLVT_DATHANG.DBO.PHIEUNHAP AS PN
                             INNER JOIN LINK2.QLVT_DATHANG.DBO.CTPN AS CTPN
                                 ON PN.MAPN = CTPN.MAPN
+                            # đẩy điều kiện này vào bên trong điều kiện form của phiếu nhập
                             WHERE PN.NGAY BETWEEN @FROM_DATE AND @TO_DATE
                             GROUP BY PN.NGAY, CTPN.MAVT
                         ) AS TKVT
                         ON VT.MAVT = TKVT.MAVT
-                        -- GROUP BY FORMAT(TKVT.NGAY, 'MM-YYYY'), VT.TENVT
                         ORDER BY FORMAT(TKVT.NGAY, 'MM-YYYY') DESC, VT.TENVT ASC
                 END
             -- FOR XUAT OPTION
@@ -57,7 +58,6 @@ BEGIN
                             GROUP BY PX.NGAY, CTPX.MAVT
                         ) AS TKVT
                         ON VT.MAVT = TKVT.MAVT
-                        -- GROUP BY FORMAT(TKVT.NGAY, 'MM-YYYY'), VT.TENVT
                         ORDER BY FORMAT(TKVT.NGAY, 'MM-YYYY') DESC, VT.TENVT ASC
                 END
         END
@@ -87,7 +87,6 @@ BEGIN
                             GROUP BY PN.NGAY, CTPN.MAVT
                         ) AS TKVT
                         ON VT.MAVT = TKVT.MAVT
-                        -- GROUP BY FORMAT(TKVT.NGAY, 'MM-YYYY'), VT.TENVT
                         ORDER BY FORMAT(TKVT.NGAY, 'MM-YYYY') DESC, VT.TENVT ASC
                 END
             -- FOR XUAT OPTION
@@ -113,7 +112,6 @@ BEGIN
                             GROUP BY PX.NGAY, CTPX.MAVT
                         ) AS TKVT
                         ON VT.MAVT = TKVT.MAVT
-                        -- GROUP BY FORMAT(TKVT.NGAY, 'MM-YYYY'), VT.TENVT
                         ORDER BY FORMAT(TKVT.NGAY, 'MM-YYYY') DESC, VT.TENVT ASC
                 END
         END
