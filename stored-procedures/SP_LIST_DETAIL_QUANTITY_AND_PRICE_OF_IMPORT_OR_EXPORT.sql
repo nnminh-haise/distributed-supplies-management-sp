@@ -31,7 +31,7 @@ BEGIN
                             GROUP BY PN.NGAY, CTPN.MAVT
                         ) AS TKVT
                         ON VT.MAVT = TKVT.MAVT
-                        GROUP BY FORMAT(TKVT.NGAY, 'MM-YYYY'), VT.TENVT
+                        -- GROUP BY FORMAT(TKVT.NGAY, 'MM-YYYY'), VT.TENVT
                         ORDER BY FORMAT(TKVT.NGAY, 'MM-YYYY') DESC, VT.TENVT ASC
                 END
             -- FOR XUAT OPTION
@@ -54,10 +54,10 @@ BEGIN
                             INNER JOIN LINK2.QLVT_DATHANG.DBO.CTPX AS CTPX
                                 ON PX.MAPX = CTPX.MAPX
                             WHERE PX.NGAY BETWEEN @FROM_DATE AND @TO_DATE
-                            GROUP BY PN.NGAY, CTPN.MAVT
+                            GROUP BY PX.NGAY, CTPX.MAVT
                         ) AS TKVT
                         ON VT.MAVT = TKVT.MAVT
-                        GROUP BY FORMAT(TKVT.NGAY, 'MM-YYYY'), VT.TENVT
+                        -- GROUP BY FORMAT(TKVT.NGAY, 'MM-YYYY'), VT.TENVT
                         ORDER BY FORMAT(TKVT.NGAY, 'MM-YYYY') DESC, VT.TENVT ASC
                 END
         END
@@ -87,7 +87,7 @@ BEGIN
                             GROUP BY PN.NGAY, CTPN.MAVT
                         ) AS TKVT
                         ON VT.MAVT = TKVT.MAVT
-                        GROUP BY FORMAT(TKVT.NGAY, 'MM-YYYY'), VT.TENVT
+                        -- GROUP BY FORMAT(TKVT.NGAY, 'MM-YYYY'), VT.TENVT
                         ORDER BY FORMAT(TKVT.NGAY, 'MM-YYYY') DESC, VT.TENVT ASC
                 END
             -- FOR XUAT OPTION
@@ -110,10 +110,10 @@ BEGIN
                             INNER JOIN CTPX AS CTPX
                                 ON PX.MAPX = CTPX.MAPX
                             WHERE PX.NGAY BETWEEN @FROM_DATE AND @TO_DATE
-                            GROUP BY PN.NGAY, CTPN.MAVT
+                            GROUP BY PX.NGAY, CTPX.MAVT
                         ) AS TKVT
                         ON VT.MAVT = TKVT.MAVT
-                        GROUP BY FORMAT(TKVT.NGAY, 'MM-YYYY'), VT.TENVT
+                        -- GROUP BY FORMAT(TKVT.NGAY, 'MM-YYYY'), VT.TENVT
                         ORDER BY FORMAT(TKVT.NGAY, 'MM-YYYY') DESC, VT.TENVT ASC
                 END
         END
