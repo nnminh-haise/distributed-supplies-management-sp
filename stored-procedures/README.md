@@ -228,3 +228,9 @@ Source code: [SP_LIST_DETAIL_QUANTITY_AND_PRICE_OF_IMPORT_OR_EXPORT](./SP_LIST_D
 Usecase: sử dụng để lấy thống kê chi tiết số lượng và trị giá hàng nhập hoặc xuất.
 
 **Lưu ý:** Nếu Login thuộc role `CongTy` thì sẽ tổng hợp từ cả hai chi nhánh, ngược lại với các role khác thì sẽ chỉ tổng hợp ở chi nhánh hiện tại đang ở.
+
+Cú pháp sử dụng: Lấy bảng thống kê chi tiết số lượng và trị giá hàng nhập với role `CongTy`
+
+```sql
+EXEC SP_LIST_DETAIL_QUANTITY_AND_PRICE_OF_IMPORT_OR_EXPORT 'CongTy' 'NHAP' '2024-03-01' '2024-03-31'
+```
