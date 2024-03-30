@@ -50,7 +50,7 @@ BEGIN
                                 SUM(CTPX.SOLUONG) AS TONG_SO_LUONG,
                                 SUM(CTPX.SOLUONG * CTPX.DONGIA) AS TONG_TRI_GIA
                             FROM (
-                                SELECT * FROM LINK2.QLVT_DATHANG.DBO.PHIEUNHAP
+                                SELECT * FROM LINK2.QLVT_DATHANG.DBO.PHIEUXUAT
                                 WHERE NGAY BETWEEN @FROM_DATE AND @TO_DATE
                             ) AS PX
                             INNER JOIN LINK2.QLVT_DATHANG.DBO.CTPX AS CTPX ON PX.MAPX = CTPX.MAPX
@@ -104,7 +104,7 @@ BEGIN
                                 SUM(CTPX.SOLUONG) AS TONG_SO_LUONG,
                                 SUM(CTPX.SOLUONG * CTPX.DONGIA) AS TONG_TRI_GIA
                             FROM (
-                                SELECT * FROM PHIEUNHAP
+                                SELECT * FROM PHIEUXUAT
                                 WHERE NGAY BETWEEN @FROM_DATE AND @TO_DATE
                             ) AS PX
                             INNER JOIN CTPX AS CTPX ON PX.MAPX = CTPX.MAPX
