@@ -1,12 +1,14 @@
 CREATE PROCEDURE SP_LIST_DETAIL_QUANTITY_AND_PRICE_OF_IMPORT_OR_EXPORT
-    @ROLE NVARCHAR(8)
-    @OPTION NCHAR(6)
-    @FROM_DATE DATE
+    @ROLE NVARCHAR(8),
+    @OPTION NCHAR(6),
+    @FROM_DATE DATE,
     @TO_DATE DATE
 AS
 BEGIN
+    -- FOR CONGTY ROLE
     IF @ROLE = 'CongTy'
         BEGIN
+            -- FOR NHAP OPTION
             IF @OPTION = 'NHAP'
                 BEGIN
                     SELECT
@@ -27,8 +29,9 @@ BEGIN
                                 ON PN.MAPN = CTPN.MAPN
                             WHERE PN.NGAY BETWEEN @FROM_DATE AND @TO_DATE) AS TKVT,
                         ON VT.MAVT = TKVT.MAVT
-                        GROUP BY FORMAT(TKVT.NGAY, 'MM-YYYY')
+                        GROUP BY TKVT.NGAY
                 END
+            -- FOR XUAT OPTION
             ELSE IF @OPTION = 'XUAT'
                 BEGIN
                     SELECT
@@ -49,11 +52,13 @@ BEGIN
                                 ON PX.MAPX = CTPX.MAPX
                             WHERE PX.NGAY BETWEEN @FROM_DATE AND @TO_DATE) AS TKVT,
                         ON VT.MAVT = TKVT.MAVT
-                        GROUP BY FORMAT(TKVT.NGAY, 'MM-YYYY')
+                        GROUP BY TKVT.NGAY
                 END
         END
+    -- FOR OTHER ROLES: CHINHANH, USER
     ELSE
         BEGIN
+            -- FOR NHAP OPTION
             IF @OPTION = 'NHAP'
                 BEGIN
                     SELECT
@@ -74,8 +79,9 @@ BEGIN
                                 ON PN.MAPN = CTPN.MAPN
                             WHERE PN.NGAY BETWEEN @FROM_DATE AND @TO_DATE) AS TKVT,
                         ON VT.MAVT = TKVT.MAVT
-                        GROUP BY FORMAT(TKVT.NGAY, 'MM-YYYY')
+                        GROUP BY TKVT.NGAY
                 END
+            -- FOR XUAT OPTION
             ELSE IF @OPTION = 'XUAT'
                 BEGIN
                     SELECT
@@ -96,7 +102,7 @@ BEGIN
                                 ON PX.MAPX = CTPX.MAPX
                             WHERE PX.NGAY BETWEEN @FROM_DATE AND @TO_DATE) AS TKVT,
                         ON VT.MAVT = TKVT.MAVT
-                        GROUP BY FORMAT(TKVT.NGAY, 'MM-YYYY')
+                        GROUP BY TKVT.NGAY
                 END
         END
 END

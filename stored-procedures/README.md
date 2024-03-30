@@ -234,3 +234,9 @@ Cú pháp sử dụng: Lấy bảng thống kê chi tiết số lượng và tr�
 ```sql
 EXEC SP_LIST_DETAIL_QUANTITY_AND_PRICE_OF_IMPORT_OR_EXPORT 'CongTy' 'NHAP' '2024-03-01' '2024-03-31'
 ```
+
+## SP_REPORT_EMPLOYEE_WORKING_STATUS
+
+Source code: [SP_REPORT_EMPLOYEE_WORKING_STATUS](./SP_REPORT_EMPLOYEE_WORKING_STATUS.sql)
+
+Usecase: Báo cáo tình trạng làm việc của nhân viên trong một khoảng thời gian từ ngày A đến ngày B.
