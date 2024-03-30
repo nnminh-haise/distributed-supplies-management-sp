@@ -21,21 +21,23 @@ Usecase: Tại trang đăng nhập, khi người dùng nhập vào login name (k
 - Họ và tên (HOTEN)
 - Tên nhóm quyền (TENNHOM): là tên của nhóm quyền như: Công ty, Chi nhánh hay Người dùng.
 
-## VIEW_GET_EMPLOYEE_LIST
+## SP_LIST_ALL_EMPLOYEES
 
-Source code: [VIEW_GET_EMPLOYEE_LIST](VIEW_GET_EMPLOYEE_LIST.sql)
+Source code: [SP_LIST_ALL_EMPLOYEES](./SP_LIST_ALL_EMPLOYEES.sql)
 
-Usecase: Lấy danh sách nhân viên gồm các thông tin:
+Usecase: Lấy danh sách nhân viên dựa trên role
 
-- Mã nhân viên (MANV)
-- Họ và tên (HOTEN)
+- Nếu role `CongTy` sẽ cho lựa chọn chi nhánh và lấy danh sách nhân viên ở chi nhánh đó
+- Đối với role `ChiNhanh` sẽ lấy danh sách nhân viên ở chi nhánh hiện tại
 
-Ví dụ output:
+Cú pháp sử dụng:
 
-| MANV | HOTEN |
-| :--: | :-----|
-| 1 | Nguyen Van A - 1 |
-| 2 | Nguyen Thi B - 2 |
+```sql
+EXEC SP_LIST_ALL_EMPLOYEES `CongTy` `CN1`
+-- OR
+EXEC SP_LIST_ALL_EMPLOYEES `ChiNhanh` null
+```
+
 
 ## SP_LIST_ALL_SUPLLIES
 
