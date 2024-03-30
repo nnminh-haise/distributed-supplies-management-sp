@@ -37,6 +37,18 @@ Ví dụ output:
 | 1 | Nguyen Van A - 1 |
 | 2 | Nguyen Thi B - 2 |
 
+## SP_LIST_ALL_SUPLLIES
+
+Source code: [SP_LIST_ALL_SUPLLIES](./SP_LIST_ALL_SUPLLIES.sql)
+
+Usecase: sử dụng để lấy danh sách vật tư.
+
+Cú pháp sử dụng:
+
+```sql
+EXEC SP_LIST_ALL_SUPLLIES
+```
+
 ## SP_CHECK_EXIST_EMPLOYEE_ID
 
 Source code: [SP_CHECK_EXIST_EMPLOYEE_ID](./SP_CHECK_EXIST_EMPLOYEE_ID.sql)
@@ -193,4 +205,26 @@ Source code: [SP_REPORT_OF_PERCENTAGE_OF_IMPORT_AND_EXPORT](./SP_REPORT_OF_PERCE
 
 Usecase: tổng hợp số tiền nhập xuất theo từng ngày trong khoảng thời gian từ ngày A đến ngày B. Cho biết tỉ lệ phần trăm của từng ngày so với tổng số ngày (từ A - B) và tổng số tiền trong khoảng ngày đó.
 
+Output mẫu:
 
+| Ngày | Nhập | Tỉ lệ nhập | Xuất | Tỉ lệ xuất |
+| :---: | ---: | :---: | ---: | :---: |
+| DD/MM/YYYY | 1,000,000 | 10 | 1,000,000 | 20 |
+| DD/MM/YYYY | 0 | 0 | 1,000,000 | 20 |
+| DD/MM/YYYY | 1,000,000 | 10 | 0 | 0 |
+| ... | | | |
+| Tổng cộng | X,000,000 | | Y,000,000 | |
+
+Cú pháp sử dụng: In ra tổng hợp tỉ lệ nhập xuất từ ngày 1 tháng 3 đến ngày 31 tháng 3 năm 2024.
+
+```sql
+EXEC SP_REPORT_OF_PERCENTAGE_OF_IMPORT_AND_EXPORT '2024-03-01' '2024-03-31'
+```
+
+## SP_LIST_DETAIL_QUANTITY_AND_PRICE_OF_IMPORT_OR_EXPORT
+
+Source code: [SP_LIST_DETAIL_QUANTITY_AND_PRICE_OF_IMPORT_OR_EXPORT](./SP_LIST_DETAIL_QUANTITY_AND_PRICE_OF_IMPORT_OR_EXPORT.sql)
+
+Usecase: sử dụng để lấy thống kê chi tiết số lượng và trị giá hàng nhập hoặc xuất.
+
+**Lưu ý:** Nếu Login thuộc role `CongTy` thì sẽ tổng hợp từ cả hai chi nhánh, ngược lại với các role khác thì sẽ chỉ tổng hợp ở chi nhánh hiện tại đang ở.
