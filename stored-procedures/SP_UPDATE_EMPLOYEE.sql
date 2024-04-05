@@ -27,22 +27,27 @@ BEGIN
         WHERE
             MANV = @MANV
 
-        IF EXIST(SELECT MANV FROM LINK1.QLVT_DATHANG.DB.NhanVien
-                    WHERE CMND = @CMND)
-            BEGIN
-                UPDATE LINK1.QLVT_DATHANG.DBO.NhanVien
-                SET TrangThaiXoa = 0
-                WHERE MANV = (SELECT MANV FROM LINK1.QLVT_DATHANG.DB.NhanVien WHERE CMND = @CMND)
-            END
-        ELSE
-            BEGIN
-                INSERT INTO LINK1.QLVT_DATHANG.DBO.NhanVien
-                    (MANV, CMND, HO, TEN, DIACHI, NGAYSINH, LUONG, MACN, TRANGTHAIXOA)
-                VALUES
-                    ((SELECT MAX(MANV) FROM LINK0.QLVT_DATHANG.DBO.NhanVien) + 1, 
-                        @CMND, @HO, @TEN, @DIACHI, @NGAYSINH, @LUONG, @NEW_CHINHANH, 0)
-            END
-        
-        UPDATE NhanVien SET TrangThaiXoa = 1 WHERE MANV = @MANV
+        CASE
+            WHEN CHANGE_BRANCH = 1 THEN
+                BEGIN
+                    IF EXIST(SELECT MANV FROM LINK1.QLVT_DATHANG.DB.NhanVien
+                                WHERE CMND = @CMND)
+                        BEGIN
+                            UPDATE LINK1.QLVT_DATHANG.DBO.NhanVien
+                            SET TrangThaiXoa = 0
+                            WHERE MANV = (SELECT MANV FROM LINK1.QLVT_DATHANG.DB.NhanVien WHERE CMND = @CMND)
+                        END
+                    ELSE
+                        BEGIN
+                            INSERT INTO LINK1.QLVT_DATHANG.DBO.NhanVien
+                                (MANV, CMND, HO, TEN, DIACHI, NGAYSINH, LUONG, MACN, TRANGTHAIXOA)
+                            VALUES
+                                ((SELECT MAX(MANV) FROM LINK0.QLVT_DATHANG.DBO.NhanVien) + 1, 
+                                    @CMND, @HO, @TEN, @DIACHI, @NGAYSINH, @LUONG, @NEW_CHINHANH, 0)
+                        END
+                    
+                    UPDATE NhanVien SET TrangThaiXoa = 1 WHERE MANV = @MANV
+                END
+        END
     COMMIT TRAN;
 END
