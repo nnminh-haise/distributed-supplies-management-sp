@@ -42,7 +42,9 @@ BEGIN
 					@HONV, @TENNV, @DIACHINV, @NGAYSINHNV, @LUONGNV, @MACN, 0)
 		    END
 		
-        -- Cập nhật lại trạng thái xoá của record nhân viên ở site cũ (site hiện tại)
+        -- * Cập nhật lại trạng thái xoá của record nhân viên ở site cũ (site hiện tại)
 		UPDATE dbo.NhanVien SET TrangThaiXoa = 1 WHERE MANV = @MANV
-	COMMIT TRAN; -- Kết thúc transaction phân tán
+		
+	-- * Kết thúc transaction phân tán
+	COMMIT TRAN;
 END
