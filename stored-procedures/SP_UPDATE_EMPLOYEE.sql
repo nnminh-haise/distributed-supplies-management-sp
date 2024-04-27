@@ -12,7 +12,7 @@
 
 CREATE PROCEDURE SP_UPDATE_EMPLOYEE
   @MANV INT,
-  @CMND NVARCHAR(10),
+  @CMND NVARCHAR(20),
   @HO NVARCHAR(20),
   @TEN NVARCHAR(50),
   @DIACHI NVARCHAR(100),
@@ -32,47 +32,55 @@ BEGIN
         -- * CHECKING IF THE TARGETING EMPLOYEE IS USED TO WORK AT THE NEW BRANCH (1)
         IF EXISTS (SELECT 1 FROM LINK1.QLVT_DATHANG.dbo.NhanVien WHERE CMND = @CMND)
           BEGIN -- PROCESS IF (1) IS TRUE
-            UPDATE LINK1.QLVT_DATHANG.dbo.NhanVien
-            SET
-              HO = @HO,
-              TEN = @TEN,
-              DIACHI = @DIACHI,
-              NGAYSINH = @NGAYSINH,
-              LUONG = @LUONG,
-              TrangThaiXoa = 0
-            WHERE
-              MANV = (SELECT MANV FROM LINK1.QLVT_DATHANG.dbo.NhanVien WHERE CMND = @CMND)
+            BEGIN TRANSACTION;
+              UPDATE LINK1.QLVT_DATHANG.dbo.NhanVien
+              SET
+                HO = @HO,
+                TEN = @TEN,
+                DIACHI = @DIACHI,
+                NGAYSINH = @NGAYSINH,
+                LUONG = @LUONG,
+                TrangThaiXoa = 0
+              WHERE
+                MANV = (SELECT MANV FROM LINK1.QLVT_DATHANG.dbo.NhanVien WHERE CMND = @CMND)
+            COMMIT TRANSACTION;
           END
         ELSE -- PROCESS IF (1) IS FALSE
           BEGIN
-            -- * GENERATE NEW EMPLOYEE ID AT NEW BRANCH
-            DECLARE @MANV_MOI INT;
-            EXEC SP_GET_EMPLOYEE_ID 
-              @MACN = @MACN_MOI,
-              @MANV_MOI = @MANV_MOI OUTPUT;
+            BEGIN TRANSACTION;
+              -- * GENERATE NEW EMPLOYEE ID AT NEW BRANCH
+              DECLARE @MANV_MOI INT;
+              EXEC SP_GET_EMPLOYEE_ID 
+                @MACN = @MACN_MOI,
+                @MANV_MOI = @MANV_MOI OUTPUT;
 
-            -- * INSERT A NEW EMPLOYEE INTO THE NEW BRANCH
-            INSERT INTO LINK1.QLVT_DATHANG.dbo.NhanVien
-              (MANV, CMND, HO, TEN, DIACHI, NGAYSINH, LUONG, MACN, TRANGTHAIXOA)
-            VALUES
-              (@MANV_MOI, @CMND, @HO, @TEN, @DIACHI, @NGAYSINH, @LUONG, @MACN_MOI, 0)
+              -- * INSERT A NEW EMPLOYEE INTO THE NEW BRANCH
+              INSERT INTO LINK1.QLVT_DATHANG.dbo.NhanVien
+                (MANV, CMND, HO, TEN, DIACHI, NGAYSINH, LUONG, MACN, TRANGTHAIXOA)
+              VALUES
+                (@MANV_MOI, @CMND, @HO, @TEN, @DIACHI, @NGAYSINH, @LUONG, @MACN_MOI, 0)
+            COMMIT TRANSACTION;
           END
         
-        -- * UPDATE THE DELETE STATUS OF THE CURRENT BRANCH OF THE TARGETING EMPLOYEE TO BE 1 (DELETED)
-        UPDATE dbo.NhanVien SET TrangThaiXoa = 1 WHERE MANV = @MANV
+        BEGIN TRANSACTION
+          -- * UPDATE THE DELETE STATUS OF THE CURRENT BRANCH OF THE TARGETING EMPLOYEE TO BE 1 (DELETED)
+          UPDATE dbo.NhanVien SET TrangThaiXoa = 1 WHERE MANV = @MANV
+        COMMIT TRANSACTION
       END
     ELSE
       BEGIN -- * UPDATE EMPLOYEE INFORMATION PROCESS
-        UPDATE LINK1.QLVT_DATHANG.DBO.NHANVIEN
-        SET
-          HO = @HO,
-          TEN = @TEN,
-          DIACHI = @DIACHI,
-          NGAYSINH = @NGAYSINH,
-          LUONG = @LUONG
-        WHERE
-          TRANGTHAIXOA = 0 AND
-          MANV = @MANV
+        BEGIN TRANSACTION
+          UPDATE NHANVIEN
+          SET
+            HO = @HO,
+            TEN = @TEN,
+            DIACHI = @DIACHI,
+            NGAYSINH = @NGAYSINH,
+            LUONG = @LUONG
+          WHERE
+            TRANGTHAIXOA = 0 AND
+            MANV = @MANV
+        COMMIT TRANSACTION
       END
 
     COMMIT TRAN;
