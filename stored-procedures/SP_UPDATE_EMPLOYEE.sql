@@ -24,64 +24,66 @@ AS
   SET XACT_ABORT ON;
   SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
 BEGIN
-  BEGIN DISTRIBUTED TRAN
-
+  BEGIN TRY
+    BEGIN DISTRIBUTED TRAN
     -- * CHECKING IF THE CHANGE BRANCH OPERATION WILL BE EXECUTED OR NOT.
     IF @MACN_CU <> @MACN_MOI
       BEGIN -- * CHANGE BRANCH AND UPDATE EMPLOYEE INFORMATION PROCESS
         -- * CHECKING IF THE TARGETING EMPLOYEE IS USED TO WORK AT THE NEW BRANCH (1)
         IF EXISTS (SELECT 1 FROM LINK1.QLVT_DATHANG.dbo.NhanVien WHERE CMND = @CMND)
           BEGIN -- PROCESS IF (1) IS TRUE
-            BEGIN TRANSACTION;
-              UPDATE LINK1.QLVT_DATHANG.dbo.NhanVien
-              SET
-                HO = @HO,
-                TEN = @TEN,
-                DIACHI = @DIACHI,
-                NGAYSINH = @NGAYSINH,
-                LUONG = @LUONG,
-                TrangThaiXoa = 0
-              WHERE
-                MANV = (SELECT MANV FROM LINK1.QLVT_DATHANG.dbo.NhanVien WHERE CMND = @CMND)
-            COMMIT TRANSACTION;
+            UPDATE LINK1.QLVT_DATHANG.dbo.NhanVien
+            SET
+              HO = @HO,
+              TEN = @TEN,
+              DIACHI = @DIACHI,
+              NGAYSINH = @NGAYSINH,
+              LUONG = @LUONG,
+              TrangThaiXoa = 0
+            WHERE
+              MANV = (SELECT MANV FROM LINK1.QLVT_DATHANG.dbo.NhanVien WHERE CMND = @CMND)
           END
         ELSE -- PROCESS IF (1) IS FALSE
           BEGIN
-            BEGIN TRANSACTION;
-              -- * GENERATE NEW EMPLOYEE ID AT NEW BRANCH
-              DECLARE @MANV_MOI INT;
-              EXEC SP_GET_EMPLOYEE_ID 
-                @MACN = @MACN_MOI,
-                @MANV_MOI = @MANV_MOI OUTPUT;
+            -- * GENERATE NEW EMPLOYEE ID AT NEW BRANCH
+            DECLARE @MANV_MOI INT;
+            EXEC SP_GET_EMPLOYEE_ID 
+              @MACN = @MACN_MOI,
+              @MANV_MOI = @MANV_MOI OUTPUT;
 
-              -- * INSERT A NEW EMPLOYEE INTO THE NEW BRANCH
-              INSERT INTO LINK1.QLVT_DATHANG.dbo.NhanVien
-                (MANV, CMND, HO, TEN, DIACHI, NGAYSINH, LUONG, MACN, TRANGTHAIXOA)
-              VALUES
-                (@MANV_MOI, @CMND, @HO, @TEN, @DIACHI, @NGAYSINH, @LUONG, @MACN_MOI, 0)
-            COMMIT TRANSACTION;
+            -- * INSERT A NEW EMPLOYEE INTO THE NEW BRANCH
+            INSERT INTO LINK1.QLVT_DATHANG.dbo.NhanVien
+              (MANV, CMND, HO, TEN, DIACHI, NGAYSINH, LUONG, MACN, TRANGTHAIXOA)
+            VALUES
+              (@MANV_MOI, @CMND, @HO, @TEN, @DIACHI, @NGAYSINH, @LUONG, @MACN_MOI, 0)
           END
         
-        BEGIN TRANSACTION
-          -- * UPDATE THE DELETE STATUS OF THE CURRENT BRANCH OF THE TARGETING EMPLOYEE TO BE 1 (DELETED)
-          UPDATE dbo.NhanVien SET TrangThaiXoa = 1 WHERE MANV = @MANV
-        COMMIT TRANSACTION
+        -- * UPDATE THE DELETE STATUS OF THE CURRENT BRANCH OF THE TARGETING EMPLOYEE TO BE 1 (DELETED)
+        UPDATE dbo.NhanVien SET TrangThaiXoa = 1 WHERE MANV = @MANV
       END
     ELSE
       BEGIN -- * UPDATE EMPLOYEE INFORMATION PROCESS
-        BEGIN TRANSACTION
-          UPDATE NHANVIEN
-          SET
-            HO = @HO,
-            TEN = @TEN,
-            DIACHI = @DIACHI,
-            NGAYSINH = @NGAYSINH,
-            LUONG = @LUONG
-          WHERE
-            TRANGTHAIXOA = 0 AND
-            MANV = @MANV
-        COMMIT TRANSACTION
+        UPDATE NHANVIEN
+        SET
+          HO = @HO,
+          TEN = @TEN,
+          DIACHI = @DIACHI,
+          NGAYSINH = @NGAYSINH,
+          LUONG = @LUONG
+        WHERE
+          TRANGTHAIXOA = 0 AND
+          MANV = @MANV
       END
+    COMMIT TRAN
+  END TRY
+  BEGIN CATCH
+    -- Error occurred, rollback the distributed transaction
+    IF @@TRANCOUNT > 0
+      ROLLBACK TRANSACTION;
 
-    COMMIT TRAN;
+    DECLARE @ErrorMessage NVARCHAR(MAX) = ERROR_MESSAGE();
+    DECLARE @ErrorSeverity INT = ERROR_SEVERITY();
+    DECLARE @ErrorState INT = ERROR_STATE();
+    RAISERROR(@ErrorMessage, @ErrorSeverity, @ErrorState);
+  END CATCH
 END
