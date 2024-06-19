@@ -19,6 +19,28 @@ BEGIN
             THROW 51000, @ERR_MESSAGE, 1;
         END
 
+        -- Terminate all sessions for the login
+        DECLARE @spid INT
+        DECLARE @login NVARCHAR(50) = @LOGIN_NAME
+
+        DECLARE session_cursor CURSOR FOR
+        SELECT session_id
+        FROM sys.dm_exec_sessions
+        WHERE login_name = @login
+
+        OPEN session_cursor
+
+        FETCH NEXT FROM session_cursor INTO @spid
+        WHILE @@FETCH_STATUS = 0
+        BEGIN
+            SET @SQL = N'KILL ' + CAST(@spid AS NVARCHAR(10))
+            EXEC sp_executesql @SQL
+            FETCH NEXT FROM session_cursor INTO @spid
+        END
+
+        CLOSE session_cursor
+        DEALLOCATE session_cursor
+
         -- Construct and execute the dynamic SQL to drop the user
         SET @SQL = N'DROP USER [' + CAST(@MANV AS NVARCHAR(50)) + N']'
         EXEC sp_executesql @SQL
