@@ -10,6 +10,7 @@ BEGIN
 	If EXISTS(SELECT 1 FROM NhanVien WHERE MANV = @MANV AND TrangThaiXoa = 0)
 	BEGIN
 		UPDATE NhanVien SET TrangThaiXoa = 1 WHERE MANV = @MANV;
+		
 	END;
 	Else
 		THROW 51000, 'Employee info is invalid', 1;
