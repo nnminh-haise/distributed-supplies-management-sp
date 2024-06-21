@@ -27,46 +27,46 @@ BEGIN
 	IF NOT EXISTS(SELECT 1 FROM NhanVien WHERE TrangThaiXoa = 0 AND MANV = @MANV)
 		THROW 51000, 'Employee Id not found', 1;
 
-    BEGIN DISTRIBUTED TRAN
-    -- * CHECKING IF THE CHANGE BRANCH OPERATION WILL BE EXECUTED OR NOT.
-    IF @MACN_CU <> @MACN_MOI BEGIN
-			-- * CHECKING IF THE TARGETING EMPLOYEE IS USED TO WORK AT THE NEW BRANCH (1)
-			IF EXISTS (SELECT 1 FROM LINK1.QLVT_DATHANG.dbo.NhanVien WHERE CMND = @CMND) BEGIN
-				-- PROCESS IF (1) IS TRUE
-				UPDATE LINK1.QLVT_DATHANG.dbo.NhanVien SET
-					HO = @HO,
-					TEN = @TEN,
-					DIACHI = @DIACHI,
-					NGAYSINH = @NGAYSINH,
-					LUONG = @LUONG,
-					TrangThaiXoa = 0
-				WHERE MANV = (SELECT MANV FROM LINK1.QLVT_DATHANG.dbo.NhanVien WHERE CMND = @CMND)
-			END
-			ELSE BEGIN -- PROCESS IF (1) IS FALSE
-				-- * GENERATE NEW EMPLOYEE ID FOR THE NEW BRANCH
-				DECLARE @MANV_MOI INT;
-				EXEC SP_GET_EMPLOYEE_ID 
-					@MACN = @MACN_MOI,
-					@MANV_MOI = @MANV_MOI OUTPUT;
-
-				-- * INSERT A NEW EMPLOYEE INTO THE NEW BRANCH
-				INSERT INTO LINK1.QLVT_DATHANG.dbo.NhanVien
-					(MANV, CMND, HO, TEN, DIACHI, NGAYSINH, LUONG, MACN, TRANGTHAIXOA)
-				VALUES (@MANV_MOI, @CMND, @HO, @TEN, @DIACHI, @NGAYSINH, @LUONG, @MACN_MOI, 0)
-			END
-
-			-- * UPDATE THE DELETE STATUS OF THE CURRENT BRANCH OF THE TARGETING EMPLOYEE TO BE 1 (DELETED)
-			UPDATE dbo.NhanVien SET TrangThaiXoa = 1 WHERE MANV = @MANV
-		END
-		ELSE BEGIN -- * UPDATE EMPLOYEE INFORMATION PROCESS
-			UPDATE NHANVIEN SET
+  BEGIN DISTRIBUTED TRAN
+  -- * Check if change branch operation will be executed or not.
+  IF @MACN_CU <> @MACN_MOI BEGIN -- * Execute this block when the change branch operation need to be executed
+		-- * Check if the employee have been worked at the new branch.
+		IF EXISTS (SELECT 1 FROM LINK1.QLVT_DATHANG.dbo.NhanVien WHERE CMND = @CMND) BEGIN -- * Exist an employee at the new branch
+			-- * Update the employee information
+			UPDATE LINK1.QLVT_DATHANG.dbo.NhanVien SET
 				HO = @HO,
 				TEN = @TEN,
-				CMND = @CMND,
 				DIACHI = @DIACHI,
 				NGAYSINH = @NGAYSINH,
-				LUONG = @LUONG
-			WHERE TRANGTHAIXOA = 0 AND MANV = @MANV
+				LUONG = @LUONG,
+				TrangThaiXoa = 0
+			WHERE MANV = (SELECT MANV FROM LINK1.QLVT_DATHANG.dbo.NhanVien WHERE CMND = @CMND)
 		END
-    COMMIT TRAN
+		ELSE BEGIN -- * Execute when the employee have not worked at the new branch
+			-- * Generate a new employee id for the new employee.
+			DECLARE @MANV_MOI INT;
+			EXEC SP_GET_EMPLOYEE_ID 
+				@MACN = @MACN_MOI,
+				@MANV_MOI = @MANV_MOI OUTPUT;
+
+			-- * Insert a new employee into the new branch with updated information
+			INSERT INTO LINK1.QLVT_DATHANG.dbo.NhanVien
+				(MANV, CMND, HO, TEN, DIACHI, NGAYSINH, LUONG, MACN, TRANGTHAIXOA)
+			VALUES (@MANV_MOI, @CMND, @HO, @TEN, @DIACHI, @NGAYSINH, @LUONG, @MACN_MOI, 0)
+		END
+
+		-- * Change the delete status of the employee at the current branch to 1.
+		UPDATE dbo.NhanVien SET TrangThaiXoa = 1 WHERE MANV = @MANV
+	END
+	ELSE BEGIN -- * Update employee information
+		UPDATE NHANVIEN SET
+			HO = @HO,
+			TEN = @TEN,
+			CMND = @CMND,
+			DIACHI = @DIACHI,
+			NGAYSINH = @NGAYSINH,
+			LUONG = @LUONG
+		WHERE TRANGTHAIXOA = 0 AND MANV = @MANV
+	END
+  COMMIT TRAN
 END
